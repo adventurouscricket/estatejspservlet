@@ -1,11 +1,15 @@
 package com.mrhenry.mapper;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.beanutils.BeanUtils;
+
+import com.mrhenry.annotation.Column;
 import com.mrhenry.annotation.Entity;
 
 public class ResultSetMapper<T> {
@@ -25,14 +29,18 @@ public class ResultSetMapper<T> {
 						Object columnValue = rs.getObject(i+1);
 						
 						//current class
-						convertResultSetToEntity(fields, columnName, columnValue, object);
+						for(Field field: fields) {
+							if(convertResultSetToEntity(field, columnName, columnValue, object)) break;
+						}
 						
 						//parent class
 						Class<? super T> parentClass = zClass.getSuperclass();
 						while(parentClass != null) {
 							Field[] parentFields = parentClass.getDeclaredFields();
-							convertResultSetToEntity(parentFields, columnName, columnValue, object);
-							parentClass = zClass.getSuperclass();
+							for(Field field: parentFields) {
+								if(convertResultSetToEntity(field, columnName, columnValue, object)) break;
+							}
+							parentClass = parentClass.getSuperclass();
 						}
 					}
 					resutls.add(object);
@@ -46,9 +54,19 @@ public class ResultSetMapper<T> {
 		return resutls;
 	}
 
-	private void convertResultSetToEntity(Field[] fields, String columnName, Object columnValue, T object) {
-		for(Field field: fields) {
-			
+	private Boolean convertResultSetToEntity(Field field, String columnName, Object columnValue, T object) {
+		Boolean flag = false;	
+		if(field.isAnnotationPresent(Column.class)) {
+				Column column = field.getAnnotation(Column.class);
+				if(column.name().equals(columnName) && columnValue != null){
+					try {
+						BeanUtils.setProperty(object, field.getName(), columnValue);
+						flag = true;
+					} catch (IllegalAccessException | InvocationTargetException e) {
+						e.printStackTrace();
+				}
+			}
 		}
+		return flag;
 	}
 }

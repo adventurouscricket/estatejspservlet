@@ -1,6 +1,6 @@
 package com.mrhenry.dto;
 
-public class BuildingDTO {
+public class BuildingDTO extends BaseDTO<BuildingDTO>{
 	private String name;
 	private String ward; 
 	private String street;
@@ -25,7 +25,60 @@ public class BuildingDTO {
 	private String timeContract;
 	private String direction;
 	private String level;
+	private String rentArea;
+	private String adress;
 	
+	private String costRentFrom;
+	private String costRentTo;
+	private String areaRentFrom;
+	private String areaRentTo;
+	private String[] buildingTypes = new String[] {};
+	
+	public String getAdress() {
+		return street+", "+ward+", "+district;
+	}
+	public Integer getCostRent() {
+		return costRent;
+	}
+	public void setCostRent(Integer costRent) {
+		this.costRent = costRent;
+	}
+	public String getRentarea() {
+		return rentArea;
+	}
+	public void setRentarea(String rentarea) {
+		this.rentArea = rentarea;
+	}
+	public String getAreaRentFrom() {
+		return areaRentFrom;
+	}
+	public void setAreaRentFrom(String areaRentFrom) {
+		this.areaRentFrom = areaRentFrom;
+	}
+	public String getAreaRentTo() {
+		return areaRentTo;
+	}
+	public void setAreaRentTo(String areaRentTo) {
+		this.areaRentTo = areaRentTo;
+	}
+	public String[] getBuildingTypes() {
+		return buildingTypes;
+	}
+	public void setBuildingTypes(String[] buildingTypes) {
+		this.buildingTypes = buildingTypes;
+	}
+	public String getCostRentFrom() {
+		return costRentFrom;
+	}
+	public void setCostRentFrom(String costRentFrom) {
+		this.costRentFrom = costRentFrom;
+	}
+	public String getCostRentTo() {
+		return costRentTo;
+	}
+	public void setCostRentTo(String costRentTo) {
+		this.costRentTo = costRentTo;
+	}
 	public String getName() {
 		return name;
 	}
@@ -67,12 +120,6 @@ public class BuildingDTO {
 	}
 	public void setBuildingArea(Integer buildingArea) {
 		this.buildingArea = buildingArea;
-	}
-	public Integer getCostRent() {
-		return costRent;
-	}
-	public void setCostRent(Integer costRent) {
-		this.costRent = costRent;
 	}
 	public String getCostDescription() {
 		return costDescription;

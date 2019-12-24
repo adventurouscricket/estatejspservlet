@@ -10,16 +10,20 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Map;
 
 import com.mrhenry.annotation.Column;
 import com.mrhenry.annotation.Entity;
 import com.mrhenry.mapper.ResultSetMapper;
+import com.mrhenry.paging.Pageable;
+import com.mrhenry.paging.Sorter;
 import com.mrhenry.repository.GenericJDBC;
 
 public class AbstractJDBC<T> implements GenericJDBC<T>{
 
 	private Class<T> zClass;
 	
+	@SuppressWarnings("unchecked")
 	AbstractJDBC(){
 		Type type = this.getClass().getGenericSuperclass();
 		ParameterizedType paramerterizedType = (ParameterizedType) type;
@@ -28,7 +32,7 @@ public class AbstractJDBC<T> implements GenericJDBC<T>{
 	
 	private Connection getConnection() {
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
+			Class.forName("com.mysql.cj.jdbc.Driver");
 			String databaseURL = "jdbc:mysql://localhost:3306/estatejspservlet";
 			String user = "root";
 			String password = "vuphuong2811";
@@ -39,9 +43,15 @@ public class AbstractJDBC<T> implements GenericJDBC<T>{
 		return null;
 	}
 	
-	@Override
-	public List<T> query(String sql, Object... parameters) {
+	/*@Override
+	public List<T> query(Object... parameters) {
 		ResultSetMapper<T> resultSetMapper = new ResultSetMapper<>();
+		String tableName = zClass.getAnnotation(Entity.class).name();
+		String sql = "";
+		if(tableName != null) {
+			sql = "SELECT * FROM "+tableName;
+		}
+		
 		try(Connection conn = getConnection();
 			PreparedStatement statement = conn.prepareStatement(sql);
 			ResultSet resultSet = statement.executeQuery()){
@@ -53,7 +63,7 @@ public class AbstractJDBC<T> implements GenericJDBC<T>{
 			System.out.println(e.getMessage());
 		}
 		return null;
-	}
+	}*/
 
 	@Override
 	public Long insert(Object entity) {
@@ -180,7 +190,6 @@ public class AbstractJDBC<T> implements GenericJDBC<T>{
 	public void update(Object entity, Long id) {
 		Connection conn = null;
 		PreparedStatement statement = null;
-		ResultSet resultSet = null;
 		
 		try {
 			conn = getConnection();
@@ -292,8 +301,162 @@ public class AbstractJDBC<T> implements GenericJDBC<T>{
 		}
 		
 		
-		String sql = "UPDATE "+tableName+" SET"+"VALUES("+sets.toString()+")";
+		String sql = "UPDATE "+tableName+" SET"+"VALUES("+sets.toString()+") "+ where;
 		
+		return sql;
+	}
+
+	@Override
+	public T findById(Long id) {
+		Connection conn = null;
+		PreparedStatement statement = null;
+		ResultSetMapper<T> resultSetMapper = new ResultSetMapper<>();
+		
+		String tableName = zClass.getAnnotation(Entity.class).name();
+		String sql = "";
+		if(tableName != null) {
+			sql = "SELECT * FROM "+tableName+" WHERE id=?";
+		}
+		
+		try{
+			conn = getConnection();
+			statement = conn.prepareStatement(sql);
+			statement.setObject(0, id);
+			ResultSet resultSet = statement.executeQuery();
+			if(conn != null) {
+				return resultSetMapper.mapRow(resultSet, zClass).get(0);
+			}
+		} catch(SQLException e) {
+			System.out.println(e.getMessage());
+		} finally {
+			try {
+				if(conn != null) {
+					conn.close();
+				}
+				if(statement != null) {
+					statement.close();
+				}
+			} catch(SQLException e2) {
+				e2.printStackTrace();
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public void delete(Long id) {
+		Connection conn = null;
+		PreparedStatement statement = null;
+		
+		try {
+			conn = getConnection();
+			conn.setAutoCommit(false);
+
+
+			String tableName = zClass.getAnnotation(Entity.class).name();
+			String sql = "";
+			if(tableName != null) {
+				sql = "DELETE FROM "+tableName+" WHERE id=?";
+			}
+			
+			statement = conn.prepareStatement(sql);
+			
+			if(conn != null) {
+				statement.setObject(1, id);
+				statement.executeUpdate();
+				conn.commit();
+			}
+			
+		} catch(SQLException e) {
+			if(conn != null) {
+				try {
+					conn.rollback();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+			}
+		} finally {
+			try {
+				if(conn != null) {
+					conn.close();
+				}
+				if(statement != null) {
+					statement.close();
+				}
+			} catch(SQLException e2) {
+				e2.printStackTrace();
+			}
+		}
+	}
+
+	@Override
+	public List<T> findAll(Map<String, Object> properties, Pageable pageable, Object ... where) {
+		Connection conn = null;
+		Statement statement = null;
+		ResultSetMapper<T> resultSetMapper = new ResultSetMapper<>();
+		StringBuilder sql = createSQLFindAll(properties);
+		if(where != null && where.length >0) {
+			sql.append(where[0]);
+		}
+		
+		if(pageable != null) {
+			if(pageable.getLimit() != null && pageable.getOffset() != null) {
+				sql.append(" LIMIT "+pageable.getOffset()+" , "+pageable.getLimit());
+			}
+			if(pageable.getSorter() != null) {
+				Sorter sorter = pageable.getSorter();
+				sql.append(" ORDER BY "+sorter.getSortName()+" "+sorter.getSortBy());
+			}
+		}
+		
+		try{
+			conn = getConnection();
+			statement = conn.createStatement();
+			ResultSet resultSet = statement.executeQuery(sql.toString());
+			if(conn != null) {
+				return resultSetMapper.mapRow(resultSet, zClass);
+			}
+		} catch(SQLException e) {
+			System.out.println(e.getMessage());
+		} finally {
+			try {
+				if(conn != null) {
+					conn.close();
+				}
+				if(statement != null) {
+					statement.close();
+				}
+			} catch(SQLException e2) {
+				e2.printStackTrace();
+			}
+		}
+		return null;
+	}
+
+	protected StringBuilder createSQLFindAll(Map<String, Object> properties) {
+		String tableName = zClass.getAnnotation(Entity.class).name();
+		StringBuilder sql = new StringBuilder();
+		if(tableName != null) {
+			sql.append("SELECT * FROM "+tableName+" dao WHERE 1 = 1 ");
+			if(properties != null && properties.size() > 0) {
+				String[] columns = new String[properties.size()];
+				Object[] values = new Object[properties.size()];
+				int index = 0;
+				for(Map.Entry<?, ?> item: properties.entrySet()) {
+					columns[index] = (String) item.getKey();
+					values[index] = item.getValue();
+					index++;
+				}
+				
+				for(int i = 0; i < columns.length; i++) {
+					if(values[i] instanceof String) {
+						sql.append("AND LOWER("+columns[i]+") LIKE %'"+values[i]+"'%");
+					} else if(values[i] instanceof Integer || values[i] instanceof Long) {
+						sql.append("AND LOWER("+columns[i]+") = '"+values[i]+"'");
+					}
+				}
+			}
+		}
 		return sql;
 	}
 }

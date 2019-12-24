@@ -6,7 +6,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpUtils;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mrhenry.dto.BuildingDTO;
+import com.mrhenry.utils.HttpUtil;
 
 public class BuildingAPI extends HttpServlet {
 	
@@ -14,6 +17,6 @@ public class BuildingAPI extends HttpServlet {
 		ObjectMapper mapper = new ObjectMapper();
 		request.setCharacterEncoding("UTF-8");
 		response.setContentType("application/json");
-		BuildingDTO building = HttpUtiil.
+//		BuildingDTO building = HttpUtil.of(reader)
 	}
 }
