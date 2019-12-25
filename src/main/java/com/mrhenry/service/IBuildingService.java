@@ -9,4 +9,5 @@ import com.mrhenry.paging.Pageable;
 public interface IBuildingService {
 	BuildingDTO save(BuildingDTO building);
 	List<BuildingDTO> findAll(BuildingSearchBuilder builder, Pageable pageable);
+	BuildingDTO findById(Long id);
 }

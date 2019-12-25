@@ -53,11 +53,11 @@
 										<div class="form-group">
 											<div class="col-sm-4">
 												<label>Quận hiện có</label>
-												<div class="fg-line" name="district">
-													<select class="form-control" id="">
-														<option>-- Chọn quận --</option>
+												<div class="fg-line">
+													<select class="form-control" id="" name="district">
+														<option value="">-- Chọn quận --</option>
 														<c:forEach var="item" items="${districts }">
-															<option value="${item.key }">${item.value}</option>
+															<option value="${item.key }" ${item.key == model.district ? "selected" : "" }>${item.value}</option>
 														</c:forEach>
 													</select>
 												</div>
@@ -79,7 +79,7 @@
 											<div class="col-sm-4">
 												<label>Số tầng hầm</label>
 												<div class="fg-line">
-													<input type="number" class="form-control input-sm" name="numberOfBasement" value="${model.numberOfBasement }"/>
+													<input type="text" class="form-control input-sm" name="numberOfBasement" value="${model.numberOfBasement }"/>
 												</div>
 											</div>
 											<div class="col-sm-4">
@@ -150,7 +150,9 @@
 												<label>Loại tòa nhà</label>
 												<div class="fg-line">
 													<c:forEach var="item" items="${buildingTypes }">
-														<label class="checkbox-inline"><input type="checkbox" name="buildingTypes" value="${item.key}"/>${item.value}</label>
+														<label class="checkbox-inline">
+															<input type="checkbox" name="buildingTypes" value="${item.key}"
+																${fn:contains(fn:join(model.buildingTypes, ','), item.key) ? 'checked' : ''}/>${item.value}</label>
 													</c:forEach>
 												</div>
 											</div>
@@ -173,7 +175,7 @@
 							<div class="pull-right tableTools-container">
 								<div class="dt-buttons btn-overlap btn-group">
 									<a flag="info" class="dt-button buttons-colvis btn btn-white btn-primary btn-bold"
-									data-toggle="tooltip" title="Thêm tòa nhà" href='<c:url value="/admin-building?action=add"/>'>
+									data-toggle="tooltip" title="Thêm tòa nhà" href='<c:url value="/admin-building?action=edit"/>'>
 									<span><i class="fa fa-plus-circle bigger-110 purple"></i></span></a>
 									
 									<button type="button" class="dt-button buttons-html5 btn btn-white btn-primary btn-bold"
@@ -204,7 +206,7 @@
 												<td>${item.name}</td>
 												<td>${item.adress}</td>
 												<td>${item.costRent}</td>
-												<td>${item.rentarea}</td>
+												<td>${item.rentArea}</td>
 												<td>${item.type}</td>
 												<td>${item.managerName}</td>
 												<td>${item.managerPhone}</td>

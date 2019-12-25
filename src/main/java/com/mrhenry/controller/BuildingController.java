@@ -30,13 +30,15 @@ public class BuildingController extends HttpServlet{
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		BuildingDTO model = FormUtil.toModel(BuildingDTO.class, request);
-		String action = request.getParameter("action");
 		String url = "";
-		if(action.equals("list")) {
+		if(model.getAction().equals("list")) {
 			url="/views/building/list.jsp";
 			BuildingSearchBuilder builder = initBuilder(model);
 			model.setResults(buildingService.findAll(builder, null));
-		} else if(action.equals("edit")) {
+		} else if(model.getAction().equals("edit")) {
+			if(model.getId() != null) {
+				model = buildingService.findById(model.getId());
+			}
 			url="/views/building/edit.jsp";
 		}
 		request.setAttribute("districts", DataUtil.getDistricts());
@@ -51,12 +53,9 @@ public class BuildingController extends HttpServlet{
 				.setName(model.getName()).setWard(model.getWard()).setStreet(model.getStreet())
 				.setAreaRentFrom(model.getAreaRentFrom()).setAreaRentTo(model.getAreaRentTo())
 				.setCostRentFrom(model.getCostRentFrom()).setCostRentTo(model.getCostRentTo())
-				.setNumberOfBasement(model.getNumberOfBasement()).setBuildingTypes(model.getBuildingTypes()).build();
+				.setNumberOfBasement(model.getNumberOfBasement()).setBuildingTypes(model.getBuildingTypes())
+				.setDistrict(model.getDistrict()).setBuildingArea(model.getBuildingArea()).setDirection(model.getDirection())
+				.build();
 		return builder;
-	}
-
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		RequestDispatcher rd = request.getRequestDispatcher("/views/building/list.jsp");
-		rd.forward(request, response);
 	}
 }

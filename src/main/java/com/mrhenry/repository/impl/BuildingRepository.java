@@ -75,14 +75,20 @@ public class BuildingRepository extends AbstractJDBC<BuildingEntity> implements 
 				try {
 					Object value = field.get(builder);
 					if(value != null) {
-						properties.put(field.getName().toLowerCase(), value);
+						if(field.getName().equals("numberOfBasement") || field.getName().equals("buildingArea")) {
+							if(!((String) value).equals("")) {
+								properties.put(field.getName().toLowerCase(), Integer.valueOf((String)value));
+							}
+						} else {
+							properties.put(field.getName().toLowerCase(), value);
+						}
 					}
 				} catch (IllegalArgumentException | IllegalAccessException e) {
 					e.printStackTrace();
 				}
 			}
 		}
-		return null;
+		return properties;
 	}
 	
 	/*private Object getValue(Field field, BuildingSearchBuilder builder) {

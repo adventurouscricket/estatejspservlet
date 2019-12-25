@@ -6,8 +6,8 @@ public class BuildingDTO extends BaseDTO<BuildingDTO>{
 	private String street;
 	private String district;
 	private String structure;
-	private Integer numberOfBasement;
-	private Integer buildingArea;
+	private String numberOfBasement;
+	private String buildingArea;
 	private Integer costRent;
 	private String costDescription;
 	private String serviceCost;
@@ -43,11 +43,11 @@ public class BuildingDTO extends BaseDTO<BuildingDTO>{
 	public void setCostRent(Integer costRent) {
 		this.costRent = costRent;
 	}
-	public String getRentarea() {
+	public String getRentArea() {
 		return rentArea;
 	}
-	public void setRentarea(String rentarea) {
-		this.rentArea = rentarea;
+	public void setRentArea(String rentArea) {
+		this.rentArea = rentArea;
 	}
 	public String getAreaRentFrom() {
 		return areaRentFrom;
@@ -109,16 +109,16 @@ public class BuildingDTO extends BaseDTO<BuildingDTO>{
 	public void setStructure(String structure) {
 		this.structure = structure;
 	}
-	public Integer getNumberOfBasement() {
+	public String getNumberOfBasement() {
 		return numberOfBasement;
 	}
-	public void setNumberOfBasement(Integer numberOfBasement) {
+	public void setNumberOfBasement(String numberOfBasement) {
 		this.numberOfBasement = numberOfBasement;
 	}
-	public Integer getBuildingArea() {
+	public String getBuildingArea() {
 		return buildingArea;
 	}
-	public void setBuildingArea(Integer buildingArea) {
+	public void setBuildingArea(String buildingArea) {
 		this.buildingArea = buildingArea;
 	}
 	public String getCostDescription() {

@@ -5,20 +5,36 @@ public class BuildingSearchBuilder {
 	private String name;
 	private String ward; 
 	private String street;
-	private Integer numberOfBasement;
+	private String numberOfBasement;
+	private String buildingArea;
 	
 	private String costRentFrom;
 	private String costRentTo;
 	private String areaRentFrom;
 	private String areaRentTo;
+	private String district;
 	
 	private String[] buildingTypes = new String[] {};
+	
+	private String direction;
+	
+	public String getDirection() {
+		return direction;
+	}
+
+	public String getBuildingArea() {
+		return buildingArea;
+	}
+
+	public String getDistrict() {
+		return district;
+	}
 	
 	public String[] getBuildingTypes() {
 		return buildingTypes;
 	}
 
-	public Integer getNumberOfBasement() {
+	public String getNumberOfBasement() {
 		return numberOfBasement;
 	}
 
@@ -60,6 +76,9 @@ public class BuildingSearchBuilder {
 		this.areaRentFrom = builder.areaRentFrom;
 		this.areaRentTo = builder.areaRentTo;
 		this.buildingTypes = builder.buildingTypes;
+		this.district = builder.district;
+		this.buildingArea = builder.buildingArea;
+		this.direction = builder.direction;
 	}
 	
 	public static class Builder {
@@ -67,21 +86,42 @@ public class BuildingSearchBuilder {
 		private String name;
 		private String ward; 
 		private String street;
-		private Integer numberOfBasement;
+		private String numberOfBasement;
 		
+		private String buildingArea;
+
 		private String costRentFrom;
 		private String costRentTo;
 		private String areaRentFrom;
 		private String areaRentTo;
 		
-		private String[] buildingTypes = new String[] {};
+		private String district;
 		
+		private String[] buildingTypes = new String[] {};
+
+		private String direction;
+		
+		public Builder setDirection(String direction) {
+			this.direction = direction;
+			return this;
+		}
+
+		public Builder setBuildingArea(String buildingArea) {
+			this.buildingArea = buildingArea;
+			return this;
+		}
+		
+		public Builder setDistrict(String district) {
+			this.district = district;
+			return this;
+		}
+
 		public Builder setBuildingTypes(String[] buildingTypes) {
 			this.buildingTypes = buildingTypes;
 			return this;
 		}
 
-		public Builder setNumberOfBasement(Integer numberOfBasement) {
+		public Builder setNumberOfBasement(String numberOfBasement) {
 			this.numberOfBasement = numberOfBasement;
 			return this;
 		}

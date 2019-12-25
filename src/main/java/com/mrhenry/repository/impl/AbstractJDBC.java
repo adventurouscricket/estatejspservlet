@@ -89,7 +89,7 @@ public class AbstractJDBC<T> implements GenericJDBC<T>{
 					statement.setObject(index, field.get(entity));
 				}
 				
-				int parentIndex = fields.length;
+				int parentIndex = fields.length + 1;
 				Class<?> parentClass = entityClass.getSuperclass();
 				while(parentClass != null) {
 					Field[] parentFields = parentClass.getDeclaredFields();
@@ -99,7 +99,7 @@ public class AbstractJDBC<T> implements GenericJDBC<T>{
 						statement.setObject(parentIndex, field.get(entity));
 						parentIndex++;
 					}
-					parentClass = zClass.getSuperclass();
+					parentClass = parentClass.getSuperclass();
 				}
 				
 				int rowsInserted = statement.executeUpdate();
@@ -177,7 +177,7 @@ public class AbstractJDBC<T> implements GenericJDBC<T>{
 					params.append("?");
 				}
 			}
-			parentClass = zClass.getSuperclass();
+			parentClass = parentClass.getSuperclass();
 		}
 		
 		
@@ -321,7 +321,7 @@ public class AbstractJDBC<T> implements GenericJDBC<T>{
 		try{
 			conn = getConnection();
 			statement = conn.prepareStatement(sql);
-			statement.setObject(0, id);
+			statement.setObject(1, id);
 			ResultSet resultSet = statement.executeQuery();
 			if(conn != null) {
 				return resultSetMapper.mapRow(resultSet, zClass).get(0);
@@ -450,9 +450,9 @@ public class AbstractJDBC<T> implements GenericJDBC<T>{
 				
 				for(int i = 0; i < columns.length; i++) {
 					if(values[i] instanceof String) {
-						sql.append("AND LOWER("+columns[i]+") LIKE %'"+values[i]+"'%");
+						sql.append("AND LOWER("+columns[i]+") LIKE '%"+values[i]+"%'");
 					} else if(values[i] instanceof Integer || values[i] instanceof Long) {
-						sql.append("AND LOWER("+columns[i]+") = '"+values[i]+"'");
+						sql.append("AND LOWER("+columns[i]+") = "+values[i]+" ");
 					}
 				}
 			}
