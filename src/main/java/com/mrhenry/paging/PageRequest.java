@@ -6,7 +6,7 @@ public class PageRequest implements Pageable {
 	private Integer maxPageItem;
 	private Sorter sorter;
 	
-	PageRequest (Integer page, Integer maxPageItem, Sorter sorter) {
+	public PageRequest (Integer page, Integer maxPageItem, Sorter sorter) {
 		this.page = page;
 		this.maxPageItem = maxPageItem;
 		this.sorter = sorter;

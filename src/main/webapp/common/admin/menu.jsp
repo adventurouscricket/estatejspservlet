@@ -39,7 +39,7 @@
 				Quản lý <b class="arrow fa fa-angle-down"></b>
 		</a> <b class="arrow"></b>
 			<ul class="submenu">
-				<li><a href='<c:url value="/admin-building?action=list"/>'>
+				<li><a href='<c:url value="/admin-building?action=list&page=1&maxPageItem=10"/>'>
 						<i class="menu-icon fa fa-caret-right"></i> Danh sách tòa nhà</a> <b class="arrow"></b></li>
 			</ul></li>
 	</ul>

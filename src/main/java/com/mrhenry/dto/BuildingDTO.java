@@ -22,7 +22,6 @@ public class BuildingDTO extends BaseDTO<BuildingDTO>{
 	private String managerName;
 	private String managerPhone;
 	private String type;
-	private String timeContract;
 	private String direction;
 	private String level;
 	private String rentArea;
@@ -34,6 +33,14 @@ public class BuildingDTO extends BaseDTO<BuildingDTO>{
 	private String areaRentTo;
 	private String[] buildingTypes = new String[] {};
 	
+	private Long[] ids;
+	
+	public Long[] getIds() {
+		return ids;
+	}
+	public void setIds(Long[] ids) {
+		this.ids = ids;
+	}
 	public String getAdress() {
 		return street+", "+ward+", "+district;
 	}
@@ -198,12 +205,6 @@ public class BuildingDTO extends BaseDTO<BuildingDTO>{
 	}
 	public void setType(String type) {
 		this.type = type;
-	}
-	public String getTimeContract() {
-		return timeContract;
-	}
-	public void setTimeContract(String timeContract) {
-		this.timeContract = timeContract;
 	}
 	public String getDirection() {
 		return direction;

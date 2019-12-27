@@ -12,6 +12,8 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.mrhenry.annotation.Column;
 import com.mrhenry.annotation.Entity;
 import com.mrhenry.mapper.ResultSetMapper;
@@ -209,19 +211,19 @@ public class AbstractJDBC<T> implements GenericJDBC<T>{
 					statement.setObject(index, field.get(entity));
 				}
 				
-				int parentIndex = fields.length;
+				int parentIndex = fields.length + 1;
 				Class<?> parentClass = entityClass.getSuperclass();
 				while(parentClass != null) {
 					Field[] parentFields = parentClass.getDeclaredFields();
 					for(int i=0; i < parentFields.length; i++) {
 						Field field = parentFields[i];
 						field.setAccessible(true);
-						if(!field.getAnnotation(Column.class).equals("id")) {
+						if(!field.getName().equals("id")) {
 							statement.setObject(parentIndex, field.get(entity));
 							parentIndex++;
 						} 
 					}
-					parentClass = zClass.getSuperclass();
+					parentClass = parentClass.getSuperclass();
 				}
 				
 				statement.setObject(parentIndex, id);
@@ -297,11 +299,11 @@ public class AbstractJDBC<T> implements GenericJDBC<T>{
 					}
 				}
 			}
-			parentClass = zClass.getSuperclass();
+			parentClass = parentClass.getSuperclass();
 		}
 		
 		
-		String sql = "UPDATE "+tableName+" SET"+"VALUES("+sets.toString()+") "+ where;
+		String sql = "UPDATE "+tableName+" SET "+sets.toString()+" "+ where;
 		
 		return sql;
 	}
@@ -344,7 +346,7 @@ public class AbstractJDBC<T> implements GenericJDBC<T>{
 	}
 
 	@Override
-	public void delete(Long id) {
+	public void delete(Long id, String sql) {
 		Connection conn = null;
 		PreparedStatement statement = null;
 		
@@ -354,12 +356,16 @@ public class AbstractJDBC<T> implements GenericJDBC<T>{
 
 
 			String tableName = zClass.getAnnotation(Entity.class).name();
-			String sql = "";
-			if(tableName != null) {
-				sql = "DELETE FROM "+tableName+" WHERE id=?";
+			String sqlQuery = "";
+			if(sql != null) {
+				sqlQuery = sql;
+			} else {
+				if(tableName != null) {
+					sqlQuery = "DELETE FROM "+tableName+" WHERE id=?";
+				}
 			}
 			
-			statement = conn.prepareStatement(sql);
+			statement = conn.prepareStatement(sqlQuery);
 			
 			if(conn != null) {
 				statement.setObject(1, id);
@@ -400,12 +406,12 @@ public class AbstractJDBC<T> implements GenericJDBC<T>{
 		}
 		
 		if(pageable != null) {
-			if(pageable.getLimit() != null && pageable.getOffset() != null) {
-				sql.append(" LIMIT "+pageable.getOffset()+" , "+pageable.getLimit());
-			}
-			if(pageable.getSorter() != null) {
+			if(pageable.getSorter() != null && StringUtils.isNotBlank(pageable.getSorter().getSortName())) {
 				Sorter sorter = pageable.getSorter();
 				sql.append(" ORDER BY "+sorter.getSortName()+" "+sorter.getSortBy());
+			}
+			if(pageable.getLimit() != null && pageable.getOffset() != null) {
+				sql.append(" LIMIT "+pageable.getOffset()+" , "+pageable.getLimit());
 			}
 		}
 		
@@ -438,6 +444,68 @@ public class AbstractJDBC<T> implements GenericJDBC<T>{
 		StringBuilder sql = new StringBuilder();
 		if(tableName != null) {
 			sql.append("SELECT * FROM "+tableName+" dao WHERE 1 = 1 ");
+			if(properties != null && properties.size() > 0) {
+				String[] columns = new String[properties.size()];
+				Object[] values = new Object[properties.size()];
+				int index = 0;
+				for(Map.Entry<?, ?> item: properties.entrySet()) {
+					columns[index] = (String) item.getKey();
+					values[index] = item.getValue();
+					index++;
+				}
+				
+				for(int i = 0; i < columns.length; i++) {
+					if(values[i] instanceof String) {
+						sql.append("AND LOWER("+columns[i]+") LIKE '%"+values[i]+"%'");
+					} else if(values[i] instanceof Integer || values[i] instanceof Long) {
+						sql.append("AND LOWER("+columns[i]+") = "+values[i]+" ");
+					}
+				}
+			}
+		}
+		return sql;
+	}
+
+	@Override
+	public Integer countAll(Map<String, Object> properties, Object... where) {
+		Connection conn = null;
+		Statement statement = null;
+		StringBuilder sql = createSQLCountAll(properties);
+		if(where != null && where.length >0) {
+			sql.append(where[0]);
+		}
+		
+		try{
+			conn = getConnection();
+			statement = conn.createStatement();
+			ResultSet resultSet = statement.executeQuery(sql.toString());
+			if(conn != null) {
+				while(resultSet.next()) {
+					return resultSet.getInt(1);
+				}
+			}
+		} catch(SQLException e) {
+			System.out.println(e.getMessage());
+		} finally {
+			try {
+				if(conn != null) {
+					conn.close();
+				}
+				if(statement != null) {
+					statement.close();
+				}
+			} catch(SQLException e2) {
+				e2.printStackTrace();
+			}
+		}
+		return 0;
+	}
+	
+	protected StringBuilder createSQLCountAll(Map<String, Object> properties) {
+		String tableName = zClass.getAnnotation(Entity.class).name();
+		StringBuilder sql = new StringBuilder();
+		if(tableName != null) {
+			sql.append("SELECT COUNT(dao.id) FROM "+tableName+" dao WHERE 1 = 1 ");
 			if(properties != null && properties.size() > 0) {
 				String[] columns = new String[properties.size()];
 				Object[] values = new Object[properties.size()];

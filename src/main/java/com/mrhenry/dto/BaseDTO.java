@@ -10,11 +10,42 @@ public class BaseDTO<T> {
 	private Timestamp modifiedDate;
 	private String createdBy;
 	private String modifiedBy;
+	
 	private Integer page = 1;
 	private Integer maxPageItem = 10;
+	private Integer totalItem;
+	private Integer totalPage;
+	
 	private String action;
 	private List<T> results = new ArrayList<T>();
 	
+	private String sortName;
+	private String sortBy;
+	
+	public String getSortName() {
+		return sortName;
+	}
+	public void setSortName(String sortName) {
+		this.sortName = sortName;
+	}
+	public String getSortBy() {
+		return sortBy;
+	}
+	public void setSortBy(String sortBy) {
+		this.sortBy = sortBy;
+	}
+	public Integer getTotalItem() {
+		return totalItem;
+	}
+	public void setTotalItem(Integer totalItem) {
+		this.totalItem = totalItem;
+	}
+	public Integer getTotalPage() {
+		return totalPage;
+	}
+	public void setTotalPage(Integer totalPage) {
+		this.totalPage = totalPage;
+	}
 	public List<T> getResults() {
 		return results;
 	}

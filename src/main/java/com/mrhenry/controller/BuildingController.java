@@ -10,8 +10,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.mrhenry.builder.BuildingSearchBuilder;
 import com.mrhenry.dto.BuildingDTO;
+import com.mrhenry.paging.PageRequest;
+import com.mrhenry.paging.Pageable;
+import com.mrhenry.paging.Sorter;
 import com.mrhenry.service.IBuildingService;
 import com.mrhenry.utils.DataUtil;
 import com.mrhenry.utils.FormUtil;
@@ -34,13 +39,17 @@ public class BuildingController extends HttpServlet{
 		if(model.getAction().equals("list")) {
 			url="/views/building/list.jsp";
 			BuildingSearchBuilder builder = initBuilder(model);
-			model.setResults(buildingService.findAll(builder, null));
+			Pageable pageable = new PageRequest(model.getPage(), model.getMaxPageItem(), new Sorter(model.getSortName(), model.getSortBy()));
+			model.setTotalItem(buildingService.countAll(builder));
+			model.setTotalPage((int) Math.ceil((double) model.getTotalItem()/model.getMaxPageItem()));
+			model.setResults(buildingService.findAll(builder, pageable));
 		} else if(model.getAction().equals("edit")) {
 			if(model.getId() != null) {
 				model = buildingService.findById(model.getId());
 			}
 			url="/views/building/edit.jsp";
 		}
+		request.setAttribute("model", model);
 		request.setAttribute("districts", DataUtil.getDistricts());
 		request.setAttribute("buildingTypes", DataUtil.getBuildingTypes());
 		request.setAttribute("models", model.getResults());

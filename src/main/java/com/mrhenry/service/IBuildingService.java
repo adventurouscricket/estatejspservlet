@@ -8,6 +8,9 @@ import com.mrhenry.paging.Pageable;
 
 public interface IBuildingService {
 	BuildingDTO save(BuildingDTO building);
+	void update(BuildingDTO building, Long id);
 	List<BuildingDTO> findAll(BuildingSearchBuilder builder, Pageable pageable);
 	BuildingDTO findById(Long id);
+	void delete(Long[] ids);
+	Integer countAll(BuildingSearchBuilder builder);
 }

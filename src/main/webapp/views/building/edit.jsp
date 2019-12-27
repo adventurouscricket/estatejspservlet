@@ -130,9 +130,11 @@
 							<div class="form-group paddingButtom">
 								<label class="col-sm-2">Loại tòa nhà</label>
 								<div class="fg-line col-sm-10">
-									<label class="checkbox-inline"><input type="checkbox" name="buildingTypes" value="TANG_TRET"/>Tầng trệt</label>
-									<label class="checkbox-inline"><input type="checkbox" name="buildingTypes" value="NGUYEN_CAN"/>Nguyên căn</label>
-									<label class="checkbox-inline"><input type="checkbox" name="buildingTypes" value="NOI_THAT"/>Nội thất</label>
+									<c:forEach var="item" items="${buildingTypes }">
+										<label class="checkbox-inline">
+										<input type="checkbox" name="buildingTypes" value="${item.key}"
+											${fn:contains(fn:join(model.buildingTypes, ','), item.key) ? 'checked' : ''}/>${item.value}</label>
+									</c:forEach>
 								</div>
 							</div>
 							<input type="hidden" name="id" value="${model.id }" id="buildingId"/>
@@ -170,10 +172,10 @@
 			});
 			data['buildingTypes'] = buildingTypes;
 			
-			if(buildingId != null) {
-				addBuilding(data, buildingId);
+			if(buildingId != "") {
+				updateBuilding(data);
 			} else {
-				updateBuilding(data, buildingId);
+				addBuilding(data);
 			}
 		}
 		
@@ -185,10 +187,26 @@
 				contenType: 'application/json',
 				dataType: 'json',
 				success: function(data){
-					window.location.href="${buildingURL}?action=edit&"+data.id+"&message=insert_success";
+					window.location.href="${buildingURL}?action=edit&id="+data.id+"&message=insert_success";
 				},
 				error: function() {
-					window.location.href="${buildingURL}?action=edit&"+data.id+"&message=error_system";
+					window.location.href="${buildingURL}?action=edit&message=error_system";
+				}
+			});
+		}
+		
+		function updateBuilding(data) {
+			$.ajax({
+				url:'${buildingAPI }',
+				data: JSON.stringify(data),
+				type: 'PUT',
+				contenType: 'application/json',
+				//dataType: 'json',
+				success: function(data){
+					window.location.href="${buildingURL}?action=list&message=update_success";
+				},
+				error: function() {
+					window.location.href="${buildingURL}?action=list&message=error_system";
 				}
 			});
 		}

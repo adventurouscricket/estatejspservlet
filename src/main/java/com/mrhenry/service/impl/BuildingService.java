@@ -79,4 +79,52 @@ public class BuildingService implements IBuildingService{
 	public BuildingDTO findById(Long id) {
 		return buildingConverter.convertToDTO(buildingRepository.findById(id));
 	}
+
+	@Override
+	public void update(BuildingDTO building, Long id) {
+		BuildingEntity oldBuilding = buildingRepository.findById(id);
+		BuildingEntity buildingEntity = buildingConverter.convertToEntity(building);
+		
+		buildingEntity.setCreatedBy(oldBuilding.getCreatedBy());
+		buildingEntity.setCreatedDate(oldBuilding.getCreatedDate());
+		buildingEntity.setModifiedBy("Modified");
+		buildingEntity.setModifiedDate(new Timestamp(System.currentTimeMillis()));
+		
+		buildingEntity.setType(StringUtils.join(building.getBuildingTypes(), ","));
+		
+
+		buildingRepository.update(buildingEntity, id);
+		
+		// overwrite rent area
+		if(StringUtils.isNotBlank(building.getRentArea())) {
+			
+			//delete rent area
+			String sql = "DELETE FROM rentarea WHERE buildingid = ?";
+			rentAreaRepository.delete(id, sql);
+			
+			for(String item: building.getRentArea().split(",")) {
+				RentAreaEntity rentAreaEntity = new RentAreaEntity();
+				rentAreaEntity.setBuildingId(id);
+				rentAreaEntity.setValue(item);
+				rentAreaEntity.setCreatedBy("Hello");
+				rentAreaEntity.setCreatedDate(new Timestamp(System.currentTimeMillis()));
+				
+				rentAreaRepository.insert(rentAreaEntity);
+			}
+		}
+	}
+
+	@Override
+	public void delete(Long[] ids) {
+		String sql = "DELETE FROM rentarea WHERE buildingid = ?";
+		for(Long id: ids) {
+			rentAreaRepository.delete(id, sql);
+			buildingRepository.delete(id, null);
+		}
+	}
+
+	@Override
+	public Integer countAll(BuildingSearchBuilder builder) {
+		return buildingRepository.countAll(builder);
+	}
 }

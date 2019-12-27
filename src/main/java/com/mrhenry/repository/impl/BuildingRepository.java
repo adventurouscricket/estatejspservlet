@@ -17,6 +17,45 @@ public class BuildingRepository extends AbstractJDBC<BuildingEntity> implements 
 	
 	public List<BuildingEntity> findAll(BuildingSearchBuilder builder, Pageable pageable) {
 		Map<String, Object> properties = buildingMapSearch(builder);
+		StringBuilder whereClause = createWhereClause(builder);
+		return super.findAll(properties, pageable, whereClause);
+	}
+	
+	private Map<String, Object> buildingMapSearch(BuildingSearchBuilder builder) {
+		Map<String, Object> properties = new HashMap<>();
+		Field[] fields = BuildingSearchBuilder.class.getDeclaredFields();
+		for(Field field : fields) {
+			if(!field.getName().equals("buildingTypes") && !field.getName().startsWith("areaRent") 
+			&& !field.getName().startsWith("costRent")) {
+//				result.put(field.getName().toLowerCase(), getValue(field, builder));
+				field.setAccessible(true);
+				try {
+					Object value = field.get(builder);
+					if(value != null) {
+						if(field.getName().equals("numberOfBasement") || field.getName().equals("buildingArea")) {
+							if(!((String) value).equals("")) {
+								properties.put(field.getName().toLowerCase(), Integer.valueOf((String)value));
+							}
+						} else {
+							properties.put(field.getName().toLowerCase(), value);
+						}
+					}
+				} catch (IllegalArgumentException | IllegalAccessException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return properties;
+	}
+
+	@Override
+	public Integer countAll(BuildingSearchBuilder builder) {
+		Map<String, Object> properties = buildingMapSearch(builder);
+		StringBuilder whereClause = createWhereClause(builder);
+		return super.countAll(properties, whereClause);
+	}
+
+	private StringBuilder createWhereClause(BuildingSearchBuilder builder) {
 		StringBuilder whereClause = new StringBuilder();
 		if(StringUtils.isNotBlank(builder.getCostRentFrom())) {
 			whereClause.append("AND costrent >= "+builder.getCostRentFrom()+"");
@@ -61,34 +100,7 @@ public class BuildingRepository extends AbstractJDBC<BuildingEntity> implements 
 				.forEach(item -> whereClause.append(" OR dao.type LIKE '%"+item+"%'"));
 			whereClause.append(")");
 		}
-		return super.findAll(properties, pageable, whereClause);
-	}
-	
-	private Map<String, Object> buildingMapSearch(BuildingSearchBuilder builder) {
-		Map<String, Object> properties = new HashMap<>();
-		Field[] fields = BuildingSearchBuilder.class.getDeclaredFields();
-		for(Field field : fields) {
-			if(!field.getName().equals("buildingTypes") && !field.getName().startsWith("areaRent") 
-			&& !field.getName().startsWith("costRent")) {
-//				result.put(field.getName().toLowerCase(), getValue(field, builder));
-				field.setAccessible(true);
-				try {
-					Object value = field.get(builder);
-					if(value != null) {
-						if(field.getName().equals("numberOfBasement") || field.getName().equals("buildingArea")) {
-							if(!((String) value).equals("")) {
-								properties.put(field.getName().toLowerCase(), Integer.valueOf((String)value));
-							}
-						} else {
-							properties.put(field.getName().toLowerCase(), value);
-						}
-					}
-				} catch (IllegalArgumentException | IllegalAccessException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		return properties;
+		return whereClause;
 	}
 	
 	/*private Object getValue(Field field, BuildingSearchBuilder builder) {

@@ -68,9 +68,6 @@ public class BuildingEntity extends BaseEntity{
 	@Column(name = "type")
 	private String type;
 	
-	@Column(name = "timecontract")
-	private String timeContract;
-	
 	@Column(name = "direction")
 	private String direction;
 	
@@ -202,12 +199,6 @@ public class BuildingEntity extends BaseEntity{
 	}
 	public void setType(String type) {
 		this.type = type;
-	}
-	public String getTimeContract() {
-		return timeContract;
-	}
-	public void setTimeContract(String timeContract) {
-		this.timeContract = timeContract;
 	}
 	public String getDirection() {
 		return direction;
