@@ -184,7 +184,7 @@
 				url:'${buildingAPI }',
 				data: JSON.stringify(data),
 				type: 'POST',
-				contenType: 'application/json',
+				contentType: 'application/json',
 				dataType: 'json',
 				success: function(data){
 					window.location.href="${buildingURL}?action=edit&id="+data.id+"&message=insert_success";
@@ -200,7 +200,7 @@
 				url:'${buildingAPI }',
 				data: JSON.stringify(data),
 				type: 'PUT',
-				contenType: 'application/json',
+				contentType: 'application/json',
 				//dataType: 'json',
 				success: function(data){
 					window.location.href="${buildingURL}?action=list&message=update_success";
