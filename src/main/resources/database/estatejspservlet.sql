@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS `estatejspservlet`.`assignmentbuilding` (
 CREATE TABLE IF NOT EXISTS `estatejspservlet`.`rentarea` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `buildingid` BIGINT(20) NOT NULL,
-  `value` VARCHAR(150) CHARACTER SET 'utf8' NOT NULL,
+  `value` INT NOT NULL,
   `createddate` TIMESTAMP NULL DEFAULT NULL,
   `modifieddate` TIMESTAMP NULL DEFAULT NULL,
   `createdby` VARCHAR(150) NULL DEFAULT NULL,
