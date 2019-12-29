@@ -281,7 +281,7 @@
 				url:'${buildingAPI }',
 				data: JSON.stringify(data),
 				type: 'DELETE',
-				contenType: 'application/json',
+				contentType: 'application/json',
 				//dataType: 'json',
 				success: function(data){
 					window.location.href="${buildingURL}?action=list&page=1&maxPageItem=10&message=delete_success";
