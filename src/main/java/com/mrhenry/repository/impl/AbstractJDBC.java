@@ -32,7 +32,7 @@ public class AbstractJDBC<T> implements GenericJDBC<T>{
 		zClass = (Class<T>) paramerterizedType.getActualTypeArguments()[0];
 	}
 	
-	private Connection getConnection() {
+	protected Connection getConnection() {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			String databaseURL = "jdbc:mysql://localhost:3306/estatejspservlet";

@@ -26,7 +26,7 @@ public class BuildingRepository extends AbstractJDBC<BuildingEntity> implements 
 		Field[] fields = BuildingSearchBuilder.class.getDeclaredFields();
 		for(Field field : fields) {
 			if(!field.getName().equals("buildingTypes") && !field.getName().startsWith("areaRent") 
-			&& !field.getName().startsWith("costRent")) {
+			&& !field.getName().startsWith("costRent") && !field.getName().equals("staffId")) {
 //				result.put(field.getName().toLowerCase(), getValue(field, builder));
 				field.setAccessible(true);
 				try {
@@ -99,6 +99,11 @@ public class BuildingRepository extends AbstractJDBC<BuildingEntity> implements 
 			Arrays.stream(buildingTypes).filter(item -> !item.equals(buildingTypes[0]))
 				.forEach(item -> whereClause.append(" OR dao.type LIKE '%"+item+"%'"));
 			whereClause.append(")");
+		}
+		
+		if(builder.getStaffId() != null) {
+			whereClause.append(" AND EXISTS (SELECT * FROM assignmentbuilding asg WHERE asg.buildingid = dao.id and asg.staffid ="+builder.getStaffId());
+			whereClause.append(" )");
 		}
 		return whereClause;
 	}

@@ -35,6 +35,15 @@ public class BuildingDTO extends BaseDTO<BuildingDTO>{
 	
 	private Long[] ids;
 	
+	private Long staffId;
+	
+	public Long getStaffId() {
+		return staffId;
+	}
+	public void setStaffId(Long staffId) {
+		this.staffId = staffId;
+	}
+	
 	public Long[] getIds() {
 		return ids;
 	}

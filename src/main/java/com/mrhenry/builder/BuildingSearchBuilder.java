@@ -18,6 +18,12 @@ public class BuildingSearchBuilder {
 	
 	private String direction;
 	
+	private Long staffId;
+	
+	public Long getStaffId() {
+		return staffId;
+	}
+	
 	public String getDirection() {
 		return direction;
 	}
@@ -79,6 +85,7 @@ public class BuildingSearchBuilder {
 		this.district = builder.district;
 		this.buildingArea = builder.buildingArea;
 		this.direction = builder.direction;
+		this.staffId = builder.staffId;
 	}
 	
 	public static class Builder {
@@ -100,6 +107,14 @@ public class BuildingSearchBuilder {
 		private String[] buildingTypes = new String[] {};
 
 		private String direction;
+		
+
+		private Long staffId;
+		
+		public Builder setStaffId(Long staffId) {
+			this.staffId = staffId;
+			return this;
+		}
 		
 		public Builder setDirection(String direction) {
 			this.direction = direction;

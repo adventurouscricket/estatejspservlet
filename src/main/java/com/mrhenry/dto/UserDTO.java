@@ -1,21 +1,13 @@
-package com.mrhenry.entity;
+package com.mrhenry.dto;
 
-import com.mrhenry.annotation.Column;
-import com.mrhenry.annotation.Entity;
-
-@Entity(name = "user")
-public class UserEntity extends BaseEntity{
+public class UserDTO extends BaseDTO<UserDTO>{
 	
-	@Column(name = "username")
 	private String userName;
 	
-	@Column(name = "password")
 	private String password;
 	
-	@Column(name = "fullname")
 	private String fullName;
 	
-	@Column(name = "status")
 	private Short status;
 
 	public String getUserName() {

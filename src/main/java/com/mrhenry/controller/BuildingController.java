@@ -16,6 +16,7 @@ import com.mrhenry.paging.PageRequest;
 import com.mrhenry.paging.Pageable;
 import com.mrhenry.paging.Sorter;
 import com.mrhenry.service.IBuildingService;
+import com.mrhenry.service.IUserService;
 import com.mrhenry.utils.DataUtil;
 import com.mrhenry.utils.FormUtil;
 
@@ -26,6 +27,9 @@ public class BuildingController extends HttpServlet{
 	
 	@Inject
 	private IBuildingService buildingService;
+	
+	@Inject
+	private IUserService userService;
 	
 	/*public BuildingController() {
 		buildingService = new BuildingService();
@@ -50,6 +54,7 @@ public class BuildingController extends HttpServlet{
 		request.setAttribute("model", model);
 		request.setAttribute("districts", DataUtil.getDistricts());
 		request.setAttribute("buildingTypes", DataUtil.getBuildingTypes());
+		request.setAttribute("staffs", userService.findAllStaffs());
 		request.setAttribute("models", model.getResults());
 		RequestDispatcher rd = request.getRequestDispatcher(url);
 		rd.forward(request, response);
@@ -62,6 +67,7 @@ public class BuildingController extends HttpServlet{
 				.setCostRentFrom(model.getCostRentFrom()).setCostRentTo(model.getCostRentTo())
 				.setNumberOfBasement(model.getNumberOfBasement()).setBuildingTypes(model.getBuildingTypes())
 				.setDistrict(model.getDistrict()).setBuildingArea(model.getBuildingArea()).setDirection(model.getDirection())
+				.setStaffId(model.getStaffId())
 				.build();
 		return builder;
 	}

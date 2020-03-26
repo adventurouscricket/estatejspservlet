@@ -1,7 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/common/taglib.jsp" %>
-<c:url var="buildingURL" value="/admin-building?action=list&page=1&maxPageItem=2" />
+<c:url var="buildingURL" value="/admin-building?action=list&page=1&maxPageItem=5" />
 <c:url var="buildingAPI" value="/api-admin-building" />
+
+<c:url var="assignmentURL" value="/admin-asgnbuilding?action=list&page=1&maxPageItem=5" />
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -112,10 +115,11 @@
 											<div class="col-sm-4">
 												<label>Nhân viên phụ trách</label>
 												<div class="fg-line">
-													<select class="form-control" id="">
-														<option>Hello</option>
-														<option>Hello</option>
-														<option>Hello</option>
+													<select class="form-control" id="" name="staffId">
+														<option>-- Chọn nhân viên --</option>
+														<c:forEach var="item" items="${staffs}">
+															<option value="${item.id }" ${item.id == model.staffId ? "selected" : "" }>${item.fullName }</option>
+														</c:forEach>
 													</select>
 												</div>
 											</div>
@@ -223,6 +227,10 @@
 													data-toggle="tooltip" title="Sửa tòa nhà" 
 													href='<c:url value="/admin-building?action=edit&id=${item.id}"/>'>
 													<i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+														<a id="assignment" href="${assignmentURL }&buildingId=${item.id}" target="_blank">
+															<button title="Assignment" class="glyphicon glyphicon-user" style="top: 2.5px; line-height: 1.8;">
+															</button>
+														</a>
 												</td>
 											</tr>
 										</c:forEach>
@@ -238,6 +246,7 @@
 			</div>
 		</div>
 	</div>
+	
 	<script type="text/javascript">
 	
 		var totalPages = ${model.totalPage};
